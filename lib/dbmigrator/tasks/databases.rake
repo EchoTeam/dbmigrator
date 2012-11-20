@@ -71,12 +71,12 @@ namespace :db do
       abort
     end
     configuration = {
-        :adapter  => 'postgresql',
-        :host     => options[:host],
-        :username => options[:user],
-        :password => options[:password],
-        :database => options[:database],
-        :encoding => 'utf8' }
+        'adapter' => 'postgresql',
+        'host' => options[:host],
+        'username' => options[:user],
+        'password' => options[:password],
+        'database' => options[:database],
+        'encoding' => 'utf8' }
     ActiveRecord::Base.configurations = {ENV["RAILS_ENV"] => configuration}
     ActiveRecord::Base.establish_connection configuration
   end
