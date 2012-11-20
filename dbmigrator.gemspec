@@ -12,7 +12,16 @@ Gem::Specification.new do |s|
   s.date = "2012-11-20"
   s.email = "vasenin@aboutecho.com"
   s.files = [
-    "VERSION"
+    "Gemfile",
+    "Gemfile.lock",
+    "Rakefile",
+    "VERSION",
+    "dbmigrator.gemspec",
+    "example/.gitignore",
+    "example/Rakefile",
+    "lib/dbmigrator.rb",
+    "lib/dbmigrator/minimal_rails_application.rb",
+    "lib/dbmigrator/tasks/databases.rake"
   ]
   s.homepage = "http://github.com/avasenin/dbmigrator"
   s.require_paths = ["lib"]
