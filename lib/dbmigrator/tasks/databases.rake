@@ -4,19 +4,15 @@ require 'rails/generators/active_record/migration/migration_generator'
 module ActiveRecord
   module Generators
     class MigrationGenerator
-      class_option :group, :type => :string, :default => ""
+      class_option :location, :type => :string, :default => "db/migrate"
 
       def create_migration_file
         set_local_assigns!
         validate_file_name!
-        migration_template "migration.rb", File.join(location, "#{file_name}.rb")
+        migration_template "migration.rb", File.join(options[:location], "#{file_name}.rb")
       end
 
       protected
-        def location
-          File.join("db/migrate", options["group"])
-        end
-
         def validate_file_name!
           unless file_name =~ /^[_a-z0-9]+$/
             raise IllegalMigrationNameError.new(file_name)
@@ -53,10 +49,12 @@ load "active_record/railties/databases.rake"
 namespace :db do
   namespace :migration do
     desc 'Create new migration'
-    task :new do |t, args|
+    task :new => ["db:set_migration_paths"] do |t, args|
       if ([:name, :group].all?{|key| options[key].present?})
-        Rails::Generators.invoke "active_record:migration", [options[:name], "--group=#{options[:group]}"],
-          :destination_root => Rails.root
+        ActiveRecord::Migrator.migrations_paths.each do |path|
+          Rails::Generators.invoke "active_record:migration", [options[:name], "--location=#{path}"],
+            :destination_root => Rails.root
+        end
       else
         puts "Error: you must provide name and group to generate migration."
         puts "For example: rake #{t.name} NAME=add_field_to_form GROUP=items"
@@ -79,22 +77,33 @@ namespace :db do
         'encoding' => 'utf8' }
     ActiveRecord::Base.configurations = {ENV["RAILS_ENV"] => configuration}
     ActiveRecord::Base.establish_connection configuration
+    if (ActiveRecord::Base.connected?)
+      ActiveRecord::Base.connection.instance_eval do
+        def supports_ddl_transactions?
+          false # switch to manual transaction support
+        end
+      end
+    end
   end
 
-  override_task :load_config => [:establish_connection] do
+  task :set_migration_paths do
     if (options[:group].blank?)
       puts "You should specify GROUP variable to set correct migration folder"
       puts "Example: rake db:migrate USER=user DATABASE=echo_development HOST=localhost GROUP=items"
       abort
     end
 
-    ActiveRecord::Migrator.migrations_paths = Rails.application.paths['db/migrate'].to_a
-    if defined?(ENGINE_PATH) && engine = Rails::Engine.find(ENGINE_PATH)
-      if engine.paths['db/migrate'].existent
-        ActiveRecord::Migrator.migrations_paths += engine.paths['db/migrate'].to_a
-      end
-    end
-    ActiveRecord::Migrator.migrations_paths = ActiveRecord::Migrator.migrations_paths.map {|path| File.join(path, options[:group])}
+    ActiveRecord::Base.schema_format = :sql
+
+    root_folder = File.join(Rails.root, "db", options[:group])
+    FileUtils.mkdir_p root_folder
+
+    ActiveRecord::Migrator.migrations_paths = [File.join(root_folder, "migrate")]
+    Rails.application.paths['db/seeds'] = File.join(root_folder, "seed.rb")
+    ENV['DB_STRUCTURE'] = File.join(root_folder, "structure.sql")
+  end
+
+  override_task :load_config => [:establish_connection, :set_migration_paths] do
   end
 end
 
