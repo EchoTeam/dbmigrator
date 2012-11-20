@@ -35,15 +35,18 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<rake>, [">= 0"])
       s.add_runtime_dependency(%q<activerecord>, ["~> 3.2.9"])
       s.add_runtime_dependency(%q<railties>, ["~> 3.2.9"])
+      s.add_runtime_dependency(%q<pg>, [">= 0"])
     else
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<activerecord>, ["~> 3.2.9"])
       s.add_dependency(%q<railties>, ["~> 3.2.9"])
+      s.add_dependency(%q<pg>, [">= 0"])
     end
   else
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<activerecord>, ["~> 3.2.9"])
     s.add_dependency(%q<railties>, ["~> 3.2.9"])
+    s.add_dependency(%q<pg>, [">= 0"])
   end
 end
 
