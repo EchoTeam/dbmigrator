@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "dbmigrator"
-  s.version = "0.2.0"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrey Vasenin"]
-  s.date = "2012-11-20"
+  s.date = "2012-11-23"
   s.email = "vasenin@aboutecho.com"
   s.files = [
     "Gemfile",
@@ -21,7 +21,10 @@ Gem::Specification.new do |s|
     "example/Rakefile",
     "lib/dbmigrator.rb",
     "lib/dbmigrator/minimal_rails_application.rb",
-    "lib/dbmigrator/tasks/databases.rake"
+    "lib/dbmigrator/tasks/databases.rake",
+    "lib/dbmigrator/tasks/migration_generator.rb",
+    "lib/dbmigrator/tasks/postgres.rb",
+    "lib/dbmigrator/tasks/task_manager.rb"
   ]
   s.homepage = "http://github.com/avasenin/dbmigrator"
   s.require_paths = ["lib"]
