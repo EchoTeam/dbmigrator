@@ -1,48 +1,7 @@
-require 'rails/generators'
-require 'rails/generators/active_record/migration/migration_generator'
-
-module ActiveRecord
-  module Generators
-    class MigrationGenerator
-      class_option :location, :type => :string, :default => "db/migrate"
-
-      def create_migration_file
-        set_local_assigns!
-        validate_file_name!
-        migration_template "migration.rb", File.join(options[:location], "#{file_name}.rb")
-      end
-
-      protected
-        def validate_file_name!
-          unless file_name =~ /^[_a-z0-9]+$/
-            raise IllegalMigrationNameError.new(file_name)
-          end
-        end
-    end
-  end
-end
-
-Rake::TaskManager.class_eval do
-  def alias_task(fq_name)
-    new_name = "#{fq_name}:original"
-    @tasks[new_name] = @tasks.delete(fq_name)
-  end
-end
-
-def alias_task(fq_name)
-  Rake.application.alias_task(fq_name)
-end
-
-def override_task(*args, &block)
-  name, params, deps = Rake.application.resolve_args(args.dup)
-  fq_name = Rake.application.instance_variable_get(:@scope).dup.push(name).join(':')
-  alias_task(fq_name)
-  Rake::Task.define_task(*args, &block)
-end
-
-def options
-  Hash[ENV.map{|key,value| [key.to_s.downcase.parameterize.underscore.to_sym,value]}]
-end
+$:.unshift File.dirname(__FILE__)
+require "task_manager"
+require "migration_generator"
+require "postgres"
 
 load "active_record/railties/databases.rake"
 
@@ -63,27 +22,13 @@ namespace :db do
   end
 
   task :establish_connection do
-    if ([:user, :database, :host].any?{|key| options[key].blank?})
-      puts "You should specify USER HOST and DATABASE variables to establist connection to database"
-      puts "Example: rake db:migrate USER=user DATABASE=echo_development HOST=localhost GROUP=items"
+    if (ENV["DATABASE_URL"].blank?)
+      puts "You should specify DATABASE_URL variable to establist connection to database"
+      puts "Example: rake db:migrate DATABASE_URL=postgres://avasenin@localhost/test_db GROUP=items"
       abort
     end
-    configuration = {
-        'adapter' => 'postgresql',
-        'host' => options[:host],
-        'username' => options[:user],
-        'password' => options[:password],
-        'database' => options[:database],
-        'encoding' => 'utf8' }
-    ActiveRecord::Base.configurations = {ENV["RAILS_ENV"] => configuration}
-    ActiveRecord::Base.establish_connection configuration
-    if (ActiveRecord::Base.connected?)
-      ActiveRecord::Base.connection.instance_eval do
-        def supports_ddl_transactions?
-          false # switch to manual transaction support
-        end
-      end
-    end
+    ActiveRecord::Base.configurations = {Rails.env => database_url_config}
+    ActiveRecord::Base.establish_connection database_url_config
   end
 
   task :set_migration_paths do
@@ -100,11 +45,24 @@ namespace :db do
 
     ActiveRecord::Migrator.migrations_paths = [File.join(root_folder, "migrate")]
     Rails.application.paths['db/seeds'] = File.join(root_folder, "seed.rb")
+    Rails.application.paths['db/setup'] = File.join(root_folder, "setup.rb")
     ENV['DB_STRUCTURE'] = File.join(root_folder, "structure.sql")
   end
 
   override_task :load_config => [:establish_connection, :set_migration_paths] do
   end
+
+  desc 'Create the database from DATABASE_URL or config/database.yml for the current Rails.env (use db:create:all to create all dbs in the config)'
+  override_task :create => [:load_config, :rails_env] do
+    create_database(database_url_config)
+    ActiveRecord::Base.establish_connection(database_url_config)
+    set_psql_env(database_url_config)
+    setup_file = Rails.application.paths["db/setup"].existent.first
+    load(setup_file) if setup_file
+  end
 end
 
+def options
+  Hash[ENV.map{|key,value| [key.to_s.downcase.parameterize.underscore.to_sym,value]}]
+end
 
