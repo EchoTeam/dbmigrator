@@ -5,7 +5,14 @@ require "postgres"
 
 load "active_record/railties/databases.rake"
 
-namespace :db do
+db_namespace = namespace :db do
+  desc "Use db:drop, db:create, db:migrate circle to reset database"
+  task :reset_with_migrations do
+    Rake::Task['db:drop'].invoke
+    Rake::Task['db:create'].invoke
+    Rake::Task['db:migrate'].invoke
+  end
+
   namespace :migration do
     desc 'Create new migration'
     task :new => ["db:set_migration_paths"] do |t, args|
@@ -52,13 +59,28 @@ namespace :db do
   override_task :load_config => [:establish_connection, :set_migration_paths] do
   end
 
-  desc 'Create the database from DATABASE_URL or config/database.yml for the current Rails.env (use db:create:all to create all dbs in the config)'
   override_task :create => [:load_config, :rails_env] do
     create_database(database_url_config)
     ActiveRecord::Base.establish_connection(database_url_config)
     set_psql_env(database_url_config)
     setup_file = Rails.application.paths["db/setup"].existent.first
     load(setup_file) if setup_file
+  end
+
+  namespace :structure do
+    desc 'Dump the database structure to db/structure.sql. Specify another file with DB_STRUCTURE=db/my_structure.sql'
+    task :dump => [:environment, :load_config] do
+      config = current_config
+      filename = ENV['DB_STRUCTURE'] || File.join(Rails.root, "db", "structure.sql")
+      next unless config['adapter'] =~ /postgres/
+      set_psql_env(config)
+      `pg_dump -i -s -O -f #{Shellwords.escape(filename)} #{Shellwords.escape(config['database'])}`
+      raise 'Error dumping database' if $?.exitstatus == 1
+      if ActiveRecord::Base.connection.supports_migrations?
+        File.open(filename, "a") { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+      end
+      db_namespace['structure:dump'].reenable
+    end
   end
 end
 
