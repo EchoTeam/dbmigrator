@@ -54,11 +54,11 @@ db_namespace = namespace :db do
 
   namespace :structure do
     override_task :dump => [:environment, :load_config] do
+      config = current_config
       unless config['adapter'] =~ /postgres/
         Rake::Task['db:structure:dump:original'].invoke
         next
       end
-      config = current_config
       filename = ENV['DB_STRUCTURE'] || File.join(Rails.root, "db", "structure.sql")
       set_psql_env(config)
       `pg_dump -i -s -O -f #{Shellwords.escape(filename)} #{Shellwords.escape(config['database'])}`
