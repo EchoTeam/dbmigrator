@@ -1,7 +1,7 @@
 require 'rails/generators'
 require 'rails/generators/active_record/migration/migration_generator'
 
-ActiveRecord::Generators::MigrationGenerator.class_eval do
+class SqlMigrationGenerator < ActiveRecord::Generators::MigrationGenerator
   class_option :location, :type => :string, :default => "db/migrate"
 
   def create_migration_file
@@ -11,6 +11,9 @@ ActiveRecord::Generators::MigrationGenerator.class_eval do
     migration_template "migration.rb", File.join(options[:location], migration_name)
   end
 
+  def source_paths
+    [File.join(File.dirname(__FILE__), "templates")]
+  end
   protected
     def validate_file_name!
       unless file_name =~ /^[_a-z0-9]+$/
@@ -18,5 +21,3 @@ ActiveRecord::Generators::MigrationGenerator.class_eval do
       end
     end
 end
-
-
