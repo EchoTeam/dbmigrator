@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "dbmigrator"
-  s.version = "0.5.1"
+  s.version = "0.5.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrey Vasenin"]
-  s.date = "2012-11-29"
+  s.date = "2012-12-20"
   s.email = "vasenin@aboutecho.com"
   s.files = [
     "Gemfile",
