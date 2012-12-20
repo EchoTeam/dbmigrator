@@ -22,6 +22,7 @@ db_namespace = namespace :db do
     end
   end
 
+
   task :establish_connection do
     if (ENV["DATABASE_URL"].blank?)
       puts "You should specify DATABASE_URL variable to establist connection to database"
@@ -51,6 +52,9 @@ db_namespace = namespace :db do
 
   override_task :load_config => [:establish_connection, :set_migration_paths] do
   end
+
+  override_task :create
+  override_task :drop
 
   namespace :structure do
     override_task :dump => [:environment, :load_config] do
