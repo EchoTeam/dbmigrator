@@ -56,6 +56,10 @@ db_namespace = namespace :db do
   override_task :create
   override_task :drop
 
+  override_task :setup => [:environment, :load_config] do
+    Rake::Task['db:setup:original'].invoke
+  end
+
   namespace :structure do
     override_task :dump => [:environment, :load_config] do
       config = current_config
