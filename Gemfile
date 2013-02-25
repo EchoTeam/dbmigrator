@@ -1,8 +1,8 @@
 source :rubygems
 
-gem 'rake'
-gem 'activerecord', '~>3.2.9'
-gem 'railties', '~>3.2.9'
+gem 'rake', '10.0.2'
+gem 'activerecord', '3.2.12'
+gem 'railties', '3.2.12'
 
 group :dev do
   gem 'jeweler'
