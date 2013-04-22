@@ -3,7 +3,7 @@ $:.unshift File.join(File.dirname(__FILE__), "..")
 require "task_manager"
 require "migration_generator"
 require "postgres"
-require "migration"
+require "environment"
 require "tempfile"
 
 load "active_record/railties/databases.rake"
