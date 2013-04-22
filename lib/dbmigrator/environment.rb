@@ -2,15 +2,15 @@ require 'active_record/migration'
 
 module DbMigrator
   module Environment
-    module_function :production?, :local?
-
     def production?
       "production" == ENV["DMB_ENV"]
     end
 
     def local?
-      "local" == ENV["DBM_ENV"]
+      !production?
     end
+
+    module_function :production?, :local?
   end
 end
 
