@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrey Vasenin"]
-  s.date = "2013-03-21"
+  s.date = "2013-04-22"
   s.email = "vasenin@aboutecho.com"
   s.extra_rdoc_files = [
     "README.markdown"
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     "example/.gitignore",
     "example/Rakefile",
     "lib/dbmigrator.rb",
-    "lib/dbmigrator/migration.rb",
+    "lib/dbmigrator/environment.rb",
     "lib/dbmigrator/migration_generator.rb",
     "lib/dbmigrator/minimal_rails_application.rb",
     "lib/dbmigrator/postgres.rb",
