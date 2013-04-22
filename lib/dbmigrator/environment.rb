@@ -3,7 +3,7 @@ require 'active_record/migration'
 module DbMigrator
   module Environment
     def production?
-      "production" == ENV["DMB_ENV"]
+      "production" == ENV["DBM_ENV"]
     end
 
     def local?
