@@ -12,7 +12,7 @@ else
     gem.name = 'dbmigrator'
     gem.summary = "Standalone migrator for non Rails projects"
     gem.email = "vasenin@aboutecho.com"
-    gem.homepage = "http://github.com/avasenin/dbmigrator"
+    gem.homepage = "http://github.com/EchoTeam/dbmigrator"
     gem.authors = ["Andrey Vasenin"]
   end
   Jeweler::GemcutterTasks.new
