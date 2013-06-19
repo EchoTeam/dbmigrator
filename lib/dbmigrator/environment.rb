@@ -2,7 +2,7 @@ require 'active_record/migration'
 
 module DbMigrator
   module Environment
-    def env?
+    def env
       ENV["DBM_ENV"]
     end
    
