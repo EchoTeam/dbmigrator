@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andrey Vasenin"]
-  s.date = "2013-04-26"
+  s.date = "2013-06-19"
   s.email = "vasenin@aboutecho.com"
   s.extra_rdoc_files = [
     "README.markdown"
@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/EchoTeam/dbmigrator"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.24"
+  s.rubygems_version = "1.8.11"
   s.summary = "Standalone migrator for non Rails projects"
 
   if s.respond_to? :specification_version then

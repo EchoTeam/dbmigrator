@@ -6,7 +6,7 @@ module DbMigrator
       ENV["DBM_ENV"]
     end
    
-    module_function :production?, :local?
+    module_function :env
   end
 end
 
