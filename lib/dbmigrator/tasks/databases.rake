@@ -75,7 +75,10 @@ db_namespace = namespace :db do
         `pg_dump -i -s -O -f #{Shellwords.escape(tempfile.path)} #{Shellwords.escape(config['database'])}`
         raise 'Error dumping database' if $?.exitstatus == 1
         if ActiveRecord::Base.connection.supports_migrations?
-          File.open(tempfile.path, "a") { |f| f << ActiveRecord::Base.connection.dump_schema_information }
+          File.open(tempfile.path, "a") do |f|
+            f << ActiveRecord::Base.connection.dump_schema_information
+            f << "\n"
+          end
         end
         filename = ENV['DB_STRUCTURE'] || File.join(Rails.root, "db", "structure.sql")
         FileUtils.cp tempfile.path, filename
